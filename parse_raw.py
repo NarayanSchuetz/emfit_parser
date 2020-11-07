@@ -13,7 +13,7 @@ import numpy as np
 import logging
 
 
-def parse_raw_csv(file_path, participant_id, millisecond_timestamp=False):
+def parse_raw_csv(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
     """
     Parses new EMFIT-QS '.csv' file format, where the data sequences are properly quoted -> ("[...]").
 
