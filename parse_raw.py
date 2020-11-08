@@ -17,7 +17,7 @@ from pyedflib import highlevel
 
 def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
     """
-    Parses new EMFIT-QS '.edf' file format.
+    Parses raw EMFIT-QS '.edf' file format.
 
     NOTE: The '.edf' files have a strange intrinsic start datetime. We've found it to be one hour ahead of the correct
           UTC time. In this script this is taken into account. However, it is strongly advised to double check the times
@@ -28,7 +28,7 @@ def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=
     :param file_path: path to raw emfit '.edf' file.
     :param participant_id: data source identifier.
     :param millisecond_timestamp: whether timestamp should be with millisecond precision or regular UNIX timestamp.
-    :return: DataFrame containing upsampled high- and low-band EFMIT-QS data with the following format:
+    :return: DataFrame containing high- and low-band EFMIT-QS data with the following format:
 
              Index:
                  RangeIndex
@@ -62,7 +62,7 @@ def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=
 
 def parse_raw_csv(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
     """
-    Parses new EMFIT-QS '.csv' file format, where the data sequences are properly quoted -> ("[...]").
+    Parses new EMFIT-QS raw '.csv' file format, where the data sequences are properly quoted -> ("[...]").
 
     :param file_path: path to raw emfit '.csv' file.
     :param participant_id: data source identifier.
@@ -123,7 +123,7 @@ def parse_raw_csv(file_path: str, participant_id: object, millisecond_timestamp=
 
 def parse_raw_csv_old_format(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
     """
-    Parses old EMFIT-QS '.csv' file format, where the data sequences are not quoted -> ([...]).
+    Parses old EMFIT-QS raw '.csv' file format, where the data sequences are not quoted -> ([...]).
 
     :param file_path: path to raw emfit '.csv' file.
     :param participant_id: data source identifier.
