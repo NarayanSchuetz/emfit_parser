@@ -7,10 +7,57 @@
 """
 
 
+import datetime
 import pandas as pd
 import re
 import numpy as np
 import logging
+from pyedflib import highlevel
+
+
+def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
+    """
+    Parses new EMFIT-QS '.edf' file format.
+
+    NOTE: The '.edf' files have a strange intrinsic start datetime. We've found it to be one hour ahead of the correct
+          UTC time. In this script this is taken into account. However, it is strongly advised to double check the times
+          as this could change since it seems like unintended behavior from Emfit's side. In addition, there is also
+          some delay between the '.edf' version and the '.csv' files (including the non-raw ones) that can range from
+          few seconds to more than 30 seconds - from what we've seen.
+
+    :param file_path: path to raw emfit '.edf' file.
+    :param participant_id: data source identifier.
+    :param millisecond_timestamp: whether timestamp should be with millisecond precision or regular UNIX timestamp.
+    :return: DataFrame containing upsampled high- and low-band EFMIT-QS data with the following format:
+
+             Index:
+                 RangeIndex
+             Columns:
+                 Name: participant_id, dtype: object
+                 Name: presence_id, dtype: str
+                 Name: record_timestamp, dtype: int64
+                 Name: data_lowband, dtype: float32
+                 Name: data_highband, dtype: float32
+    """
+
+    signals, signal_headers, header = highlevel.read_edf(file_path)
+    emfit_raw_edf = pd.DataFrame({
+        "participant_id": participant_id,
+        "presence_id": "None",
+        "record_timestamp": pd.date_range(
+            start=datetime.datetime.utcfromtimestamp(header["startdate"].timestamp()) - datetime.timedelta(hours=1),
+            periods=signals.shape[1],
+            freq='{}N'.format(int(1e9 / 100))),
+        "data_highband": signals[0].astype(np.float32),
+        "data_lowband": signals[1].astype(np.float32)
+    })
+    emfit_raw_edf.record_timestamp = emfit_raw_edf.record_timestamp.apply(lambda x: int(x.timestamp() * 1000))
+
+    if not millisecond_timestamp:
+        emfit_raw_edf.record_timestamp /= 1000
+    emfit_raw_edf.record_timestamp = emfit_raw_edf.record_timestamp.astype(np.int64)
+
+    return emfit_raw_edf
 
 
 def parse_raw_csv(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
