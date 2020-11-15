@@ -62,7 +62,8 @@ def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=
 
 def parse_raw_csv(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
     """
-    Parses new EMFIT-QS raw '.csv' file format, where the data sequences are properly quoted -> ("[...]").
+    Parses new EMFIT-QS raw '.csv' file format, where the data sequences are properly quoted -> ("[...]") and upsamples
+    lowband to 100 Hz (same as highband) using linear interpolation.
 
     :param file_path: path to raw emfit '.csv' file.
     :param participant_id: data source identifier.
@@ -123,7 +124,8 @@ def parse_raw_csv(file_path: str, participant_id: object, millisecond_timestamp=
 
 def parse_raw_csv_old_format(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
     """
-    Parses old EMFIT-QS raw '.csv' file format, where the data sequences are not quoted -> ([...]).
+    Parses old EMFIT-QS raw '.csv' file format, where the data sequences are not quoted -> ([...]) and upsamples
+    lowband to 100 Hz (same as highband) using linear interpolation.
 
     :param file_path: path to raw emfit '.csv' file.
     :param participant_id: data source identifier.
