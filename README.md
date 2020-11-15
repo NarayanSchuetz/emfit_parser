@@ -9,4 +9,10 @@ Allows to parse `'.csv'` as well as `'.edf' files. Provides implementation for o
 
 <strong>NOTE:</strong> We found `'.edf'` files to have some timestamp problems, please make sure to manually check it as this might get
       fixed by the manufacturer sooner or later. Our current quickfix seems to work with the data we currently have.
-   
+
+
+## PIP Install
+
+To install this package with `pip`, run the following command:
+
+    `pip install git+https://github.com/NarayanSchuetz/emfit_parser.git`
