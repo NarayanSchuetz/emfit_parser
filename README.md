@@ -15,4 +15,4 @@ Allows to parse `'.csv'` as well as `'.edf' files. Provides implementation for o
 
 To install this package with `pip`, run the following command:
 
-    `pip install git+https://github.com/NarayanSchuetz/emfit_parser.git`
+    pip install git+https://github.com/NarayanSchuetz/emfit_parser.git
