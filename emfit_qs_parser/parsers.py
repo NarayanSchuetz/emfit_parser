@@ -12,10 +12,16 @@ import pandas as pd
 import re
 import numpy as np
 import logging
+
+import pytz
 from pyedflib import highlevel
 
 
-def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=True) -> pd.DataFrame:
+def parse_raw_edf(file_path: str,
+                  participant_id: object,
+                  millisecond_timestamp: bool = True,
+                  timezone: pytz.BaseTzInfo = pytz.utc,
+                  emfit_offset: datetime.timedelta = datetime.timedelta(hours=-1)) -> pd.DataFrame:
     """
     Parses raw EMFIT-QS '.edf' file format.
 
@@ -28,6 +34,10 @@ def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=
     :param file_path: path to raw emfit '.edf' file.
     :param participant_id: data source identifier.
     :param millisecond_timestamp: whether timestamp should be with millisecond precision or regular UNIX timestamp.
+    :param timezone: timezone of the EDF data (basically what the EDF header start datetime is in). (default: UTC)
+    :param emfit_offset: offset to correct the EDF header start datetime (default: 0 hour). As mentioned before
+        we found the EDF header start datetime to be one hour ahead of the correct UTC time but this could change so
+        the default is set to -1 hour, check it and if it seems off, try setting the offset to 0 hour.
     :return: DataFrame containing high- and low-band EFMIT-QS data with the following format:
 
              Index:
@@ -45,7 +55,7 @@ def parse_raw_edf(file_path: str, participant_id: object, millisecond_timestamp=
         "participant_id": participant_id,
         "presence_id": "None",
         "record_timestamp": pd.date_range(
-            start=datetime.datetime.utcfromtimestamp(header["startdate"].timestamp()) - datetime.timedelta(hours=1),
+            start=datetime.datetime.utcfromtimestamp(timezone.localize(header["startdate"]).timestamp()) + emfit_offset,
             periods=signals.shape[1],
             freq='{}N'.format(int(1e9 / 100))),
         "data_highband": signals[0].astype(np.float32),
@@ -87,7 +97,7 @@ def parse_raw_csv(file_path: str, participant_id: object, millisecond_timestamp=
         engine="c")
 
     _id = raw_data["id"].iloc[0]
-    device_id = raw_data["device_serial"]
+    #device_id = raw_data["device_serial"]
     timestamp_start = int(raw_data["start_date"].iloc[0])
 
     lowband = raw_data["data_lo_band"].iloc[0]
